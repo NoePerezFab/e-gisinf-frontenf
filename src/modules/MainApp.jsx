@@ -121,7 +121,8 @@ const hideFile = () => {
          seteditingFile={seteditingFile} seteditFile={seteditFile} editFile={editFile} editingFile={editingFile}
          setmetadatos={setmetadatos} metadatos={metadatos} setfolders={setfolders} setmetadatosBusqueda={setmetadatosBusqueda}
          metadatosBusqueda={metadatosBusqueda} ocrText={ocrText} showFileMenu={showFileMenu}  fileMenu={fileMenu} actualFile={actualFile}/>
-        <FileViewer file = {showedFile} show = {showFile} actualPath={actualPath}/>
+        {//<FileViewer file = showedFile show = showFile actualPath=actualPath/>
+        }
       </div>
     </main>
     </> :

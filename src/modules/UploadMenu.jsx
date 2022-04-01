@@ -368,13 +368,16 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
     const handleAddFolder = async(e)=>{
         e.preventDefault()
         const auth = JSON.parse(localStorage.getItem("user")).token
-        
+        conevertirMetadatos()
         let folder = {}
         folder.fatherPath = actualPath
         folder.name = nombreCarpeta
         var meta
         metadatos.length > 0 ?
-         meta = metadatos.map(({nombre,tipo})=>{
+         meta = metadatos.map(({nombre,tipo,opciones})=>{
+             if(tipo === "text"){
+                return({nombre: nombre,tipo: tipo,opciones : opciones})     
+             }
             return({nombre: nombre,tipo: tipo})
         }) :  meta = []
 
@@ -411,13 +414,33 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
         })
     }
     const handletipo = (e)=>{
-        metadatos.map((meta)=>{
+       const metaAux = metadatos.map((meta)=>{
             
             if(meta.key === parseInt(e.target.id)){
                 meta.tipo = e.target.value 
+                if(meta.tipo === "text") {
+                meta.opciones = [{valor : "",key : e.target.id + "&1"}] 
+                }else { 
+                meta.opciones = []
+                }
             }
             return(meta)
         })
+        setmetadatos(metaAux)
+
+    }
+    const addOpcion = (e) =>{
+        const metaAux = metadatos.map((meta)=>{
+            
+            if(meta.key === parseInt(e.target.id)){
+                const lop = meta.opciones[meta.opciones.length -1]
+                const key = parseInt(lop.key.split("&")[lop.key.split("&").length - 1])+1
+                meta.opciones = [...meta.opciones, {valor : "",key : e.target.id + "&"+key }] 
+                
+            }
+            return(meta)
+        })
+        setmetadatos(metaAux)
     }
     const handleMetadato = (e) =>{
         
@@ -434,6 +457,39 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
         }
     
     }
+
+    const handleOpciones = (e) =>{
+        
+        const key = e.target.id.split("&")[0]
+        const metaAux = metadatos.map((meta)=>{
+            
+            if(meta.key === parseInt(key)){
+                if(meta.tipo === "text") {
+                    meta.opciones.map(op =>{
+                        if(op.key === e.target.id){
+                            op.valor = e.target.value
+                        }
+                    })
+                }
+            }
+            return(meta)
+        })
+        console.log(metaAux);
+        setmetadatos(metaAux)
+    }
+    const conevertirMetadatos = () =>{
+        const metadatosAux = metadatos.map(meta =>{
+            if(meta.tipo === "text"){
+               const opAux = meta.opciones.map(op =>{
+                    return op.valor
+                })
+                meta.opciones = opAux
+            }
+            return meta
+        })
+        setmetadatos(metadatosAux)
+    }
+
     return (
         <>
         <MDBRow className="w-100 mb-0 pb-0">
@@ -483,8 +539,18 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
             <input type="file" class="custom-file-input" id="validatedCustomFile" required lang="es" ref={documento} onInput={changeFileName}/>
             <label class="custom-file-label" for="validatedCustomFile">{folderName}</label>    
         </div>
-        {actualFolder.metadatos !== undefined && actualFolder.metadatos !== null ? actualFolder.metadatos.map(({nombre,tipo})=>{
+        {actualFolder.metadatos !== undefined && actualFolder.metadatos !== null ? actualFolder.metadatos.map(({nombre,tipo,opciones})=>{
+            
             return(
+                tipo === "text" ?
+                <select className="custom-select mt-2" id={nombre} onInput={handleMetadato}  required>
+                    <option value="">{nombre}</option>
+                    {opciones.map(op =>{
+                        return(
+                            <option value={op}>{op}</option>
+                        )
+                    })}
+                </select> :
                 tipo !== 'date' ?
                 <MDBInput label={nombre} icon="file-alt" group type={tipo} validate error="wrong" required
             success="right"  id={nombre} onInput={handleMetadato} />:<div class="form-group">
@@ -535,7 +601,7 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
         <MDBInput label="Nombre de la carpeta" icon="folder" group type="text" validate error="wrong" required
             success="right" getValue={handleNombreCarpeta} />
            
-        {metadatos.length > 0 ? metadatos.map(({key})=>{
+        {metadatos.length > 0 ? metadatos.map(({key,opciones})=>{
             return(
                 <>
                 <MDBInput label="Nombre" icon="file-signature" group type="text" validate error="wrong" required
@@ -547,6 +613,16 @@ const UploadMenu =  ({actualPath,viewFile,setfiles,modal,setmodal,seteditingFile
           <option value="text">Texto</option>
           <option value="date">Fecha</option>
         </select>
+        {opciones !== undefined && opciones.length > 0 ?
+        <MDBBtn color="indigo" onClick={addOpcion} id={key}><i class="fas fa-plus"></i></MDBBtn> :<></>   }
+        {opciones !== undefined ? opciones.map(op => {
+            return(
+                <>
+            <MDBInput label="Valor" icon="file-signature" group type="text" validate error="wrong" required
+            success="right" id={op.key} onInput={handleOpciones}   />
+            
+            </> )
+        }) : <></>}
       </div>
             </>
             )

@@ -107,7 +107,7 @@ const FileList = ({files,actualPath,viewFile,setfiles,modal,setmodal,seteditingF
   
     return (
       
-        <div class="col-4">
+        <div class="col-8">
           <div className="d-flex w-100">
          
          
@@ -160,7 +160,7 @@ const FileList = ({files,actualPath,viewFile,setfiles,modal,setmodal,seteditingF
     </MDBCardBody>
   </MDBCard>
 </MDBContainer>
-<MDBContainer className="w-100">
+{/*<MDBContainer className="w-100">
   <MDBCard style={{ width: "22rem", marginTop: "1rem" }} className="w-100">
     <MDBCardHeader color="primary-color">OCR</MDBCardHeader>
     <MDBCardBody>
@@ -171,7 +171,8 @@ const FileList = ({files,actualPath,viewFile,setfiles,modal,setmodal,seteditingF
       
     </MDBCardBody>
   </MDBCard>
-</MDBContainer>
+</MDBContainer>*/
+}
 
             
         </div>
